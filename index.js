@@ -22,15 +22,21 @@ async function run() {
     await client.connect();
     const database = client.db("device-dynasty");
     const productsCollection = database.collection("products");
-    const bannerCollection = database.collection("banner")
-    app.get('/products',async(req,res)=>{
-        const result = await productsCollection.find().toArray()
+    const bannerCollection = database.collection("banner");
+    app.get("/products", async (req, res) => {
+      const result = await productsCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/banner", async (req, res) => {
+      const result = await bannerCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/products/random", async (req, res) => {
+      const result = await productsCollection
+        .aggregate([{ $sample: { size: 6 } }])
+        .toArray();
         res.send(result)
-    })
-    app.get('/banner',async(req,res)=>{
-        const result = await bannerCollection.find().toArray()
-        res.send(result)
-    })
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
