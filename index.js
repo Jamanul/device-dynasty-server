@@ -24,23 +24,33 @@ async function run() {
     const productsCollection = database.collection("products");
     const bannerCollection = database.collection("banner");
     app.get("/products", async (req, res) => {
-        const {sort,sortByDate,minPrice,maxPrice,brand,category} = req.query
-        console.log("hello",brand)
+        const {sort,sortByDate,minPrice,maxPrice,brand,category,page = 1, limit = 10,} = req.query
+        console.log(req.query)
         const query= {
             $and: [
+             
                 minPrice && maxPrice ? { price: { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) } } : {},
                 brand ? { productBrand: brand } : {},
                 category ? { category: category } : {},
               ]
         }
         const options ={
+          skip: (page - 1) * limit,
+          limit: parseInt(limit),      
             sort: { 
                 price: sort == 'acs' ? 1 : -1,
-                productCreationDate: sortByDate == 'acs'? 1: -1
+                productCreationDate: sortByDate == 'acs'? 1: -1,
+                
             },
         }
+        const totalProducts = await productsCollection.countDocuments(query);
       const result = await productsCollection.find(query,options).toArray();
-      res.send(result);
+      res.send({
+        result,
+        totalPages: Math.ceil(totalProducts / limit),
+        currentPage: parseInt(page),
+        totalProducts
+      });
     });
     app.get("/banner", async (req, res) => {
       const result = await bannerCollection.find().toArray();
