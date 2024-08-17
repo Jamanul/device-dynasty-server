@@ -25,11 +25,15 @@ async function run() {
     const bannerCollection = database.collection("banner");
     app.get("/products", async (req, res) => {
    
-        const {sort} = req.query
-        console.log(sort)
+        const {sort,sortByDate} = req.query
+        console.log("hello",sortByDate)
         const query= {}
         const options ={
-            sort: { price: req.query.sort == 'acs' ? 1 : -1}
+            sort: { 
+                price: req.query.sort == 'acs' ? 1 : -1,
+                productCreationDate: sortByDate == 'acs'? 1: -1,
+                
+            },
         }
       const result = await productsCollection.find(query,options).toArray();
       res.send(result);
