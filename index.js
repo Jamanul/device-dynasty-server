@@ -24,7 +24,14 @@ async function run() {
     const productsCollection = database.collection("products");
     const bannerCollection = database.collection("banner");
     app.get("/products", async (req, res) => {
-      const result = await productsCollection.find().toArray();
+   
+        const {sort} = req.query
+        console.log(sort)
+        const query= {}
+        const options ={
+            sort: { price: req.query.sort == 'acs' ? 1 : -1}
+        }
+      const result = await productsCollection.find(query,options).toArray();
       res.send(result);
     });
     app.get("/banner", async (req, res) => {
