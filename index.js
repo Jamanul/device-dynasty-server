@@ -61,6 +61,13 @@ async function run() {
       const result = await bannerCollection.find().toArray();
       res.send(result);
     });
+    app.get('/category',async(req,res)=>{
+      const params =req.query
+      //console.log(params)
+      const query = {category: params.category}
+      const result = await productsCollection.find(query).toArray()
+      res.send(result)
+    })
     app.get("/products/random", async (req, res) => {
       const result = await productsCollection
         .aggregate([{ $sample: { size: 6 } }])
