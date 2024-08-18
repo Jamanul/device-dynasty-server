@@ -7,7 +7,7 @@ require("dotenv").config();
 app.use(cors({
   origin :[
     'http://localhost:5173',
-    
+    "https://device-dynasty-c3c09.web.app"
   ]
 }));
 app.use(express.json());
@@ -29,11 +29,11 @@ async function run() {
     const productsCollection = database.collection("products");
     const bannerCollection = database.collection("banner");
     app.get("/products", async (req, res) => {
-        const {sort,sortByDate,minPrice,maxPrice,brand,category,page = 1, limit = 10,} = req.query
+        const {sort,sortByDate,minPrice,maxPrice,brand,category,page = 1, limit = 10,searchText} = req.query
         console.log(req.query)
         const query= {
             $and: [
-             
+               searchText ? {productName :{$regex :searchText, $options: 'i'}} : {},
                 minPrice && maxPrice ? { price: { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) } } : {},
                 brand ? { productBrand: brand } : {},
                 category ? { category: category } : {},
